@@ -12,34 +12,49 @@
         <p class="eyebrow">Bros Chromium Plugin</p>
         <h1>Selection Translator Settings</h1>
         <p class="summary">
-          当前版本聚焦英文划词。你可以设置默认翻译方向、英译中来源、英英词典来源，并决定是否在划词后自动请求结果。
+          当前版本聚焦英文划词。你可以设置默认翻译方向、两种模式各自的来源、是否自动翻译，以及页内结果卡片的背景色。
         </p>
       </section>
 
       <section class="card">
-        <label>
-          默认翻译方向
-          <select id="target-language">
-            <option value="zh">英译中</option>
-            <option value="en">英译英</option>
-          </select>
-        </label>
+        <div class="grid">
+          <label>
+            默认翻译方向
+            <select id="target-language">
+              <option value="zh">英译中</option>
+              <option value="en">英译英</option>
+            </select>
+          </label>
 
-        <label>
-          英译中来源
-          <select id="provider-zh">
-            <option value="google">Google Web</option>
-            <option value="mymemory">MyMemory</option>
-          </select>
-        </label>
+          <label>
+            卡片背景色
+            <select id="background-theme">
+              <option value="mist">雾蓝</option>
+              <option value="sage">浅青</option>
+              <option value="sand">米杏</option>
+              <option value="rose">浅玫</option>
+              <option value="lavender">淡紫</option>
+              <option value="peach">蜜桃</option>
+              <option value="slate">云灰</option>
+            </select>
+          </label>
 
-        <label>
-          英英词典来源
-          <select id="provider-en">
-            <option value="dictionaryapi">Free Dictionary API</option>
-            <option value="datamuse">Datamuse</option>
-          </select>
-        </label>
+          <label>
+            英译中来源
+            <select id="provider-zh">
+              <option value="google">Google Web</option>
+              <option value="mymemory">MyMemory</option>
+            </select>
+          </label>
+
+          <label>
+            英英词典来源
+            <select id="provider-en">
+              <option value="dictionaryapi">Free Dictionary API</option>
+              <option value="datamuse">Datamuse</option>
+            </select>
+          </label>
+        </div>
 
         <label class="checkbox">
           <input id="auto-translate" type="checkbox" />
@@ -47,8 +62,8 @@
         </label>
 
         <div class="notes">
+          <p>页内卡片会自动跟随系统白天 / 黑夜模式，背景色会同步切换到对应的低饱和版本。</p>
           <p>英英词典模式当前针对单词释义做了优化，短语或整句不会返回词典结果。</p>
-          <p>英译中选中单词时会优先补充音标和多个中文义项；在线来源可能存在速率限制。</p>
         </div>
       </section>
     </main>

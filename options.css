@@ -1,5 +1,5 @@
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
   --bg: #f2f7fb;
   --card: rgba(255, 255, 255, 0.84);
   --ink: #133048;
@@ -64,6 +64,12 @@ h1 {
   box-shadow: 0 18px 50px rgba(19, 48, 72, 0.08);
 }
 
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+
 label {
   display: block;
   margin-bottom: 18px;
@@ -80,6 +86,12 @@ select {
   border-radius: 9px;
   font-size: 13px;
   color: var(--ink);
+  background: #ffffff;
+  color-scheme: light;
+}
+
+option {
+  color: #133048;
   background: #ffffff;
 }
 
@@ -106,4 +118,32 @@ select {
 
 .notes p {
   margin: 0 0 8px;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101923;
+    --card: rgba(18, 28, 40, 0.84);
+    --ink: #edf4fb;
+    --muted: #9eb0c2;
+    --line: rgba(223, 234, 245, 0.12);
+    --accent: #76a9e0;
+  }
+
+  select {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.06);
+    color-scheme: dark;
+  }
+
+  option {
+    color: #edf4fb;
+    background: #182434;
+  }
 }

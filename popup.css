@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  min-width: 320px;
+  min-width: 336px;
   font-family: "Segoe UI", "PingFang SC", sans-serif;
   background: linear-gradient(180deg, #f8fbfd 0%, #eef5fa 100%);
   color: #163046;
@@ -21,6 +21,12 @@ h1 {
   font-size: 12px;
   line-height: 1.6;
   color: #5d7082;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 12px;
 }
 
 label {
@@ -44,9 +50,46 @@ button {
   padding: 0 10px;
 }
 
+select {
+  color-scheme: light;
+}
+
+option {
+  color: #163046;
+  background: #ffffff;
+}
+
 button {
   margin-top: 4px;
   cursor: pointer;
   background: #0f4c81;
   color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(180deg, #111b25 0%, #162330 100%);
+    color: #edf4fb;
+  }
+
+  .lead,
+  .hint {
+    color: #9fb1c3;
+  }
+
+  select,
+  button {
+    border-color: rgba(237, 244, 251, 0.12);
+  }
+
+  select {
+    color: #edf4fb;
+    background: rgba(255, 255, 255, 0.06);
+    color-scheme: dark;
+  }
+
+  option {
+    color: #edf4fb;
+    background: #182434;
+  }
 }

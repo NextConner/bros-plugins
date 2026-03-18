@@ -5,7 +5,8 @@ const DEFAULT_SETTINGS = {
     en: "dictionaryapi"
   },
   triggerMode: "mouseup",
-  autoTranslate: true
+  autoTranslate: true,
+  backgroundTheme: "mist"
 };
 
 chrome.runtime.onInstalled.addListener(async () => {

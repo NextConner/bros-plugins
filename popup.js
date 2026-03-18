@@ -3,12 +3,14 @@ const DEFAULT_SETTINGS = {
   providers: {
     zh: "google",
     en: "dictionaryapi"
-  }
+  },
+  backgroundTheme: "mist"
 };
 
 const targetLanguage = document.getElementById("target-language");
 const providerZh = document.getElementById("provider-zh");
 const providerEn = document.getElementById("provider-en");
+const backgroundTheme = document.getElementById("background-theme");
 const openOptionsButton = document.getElementById("open-options");
 
 init();
@@ -27,6 +29,7 @@ async function init() {
   targetLanguage.value = settings.defaultTargetLanguage;
   providerZh.value = settings.providers.zh;
   providerEn.value = settings.providers.en;
+  backgroundTheme.value = settings.backgroundTheme;
 }
 
 targetLanguage.addEventListener("change", async () => {
@@ -53,6 +56,10 @@ providerEn.addEventListener("change", async () => {
   };
 
   await chrome.storage.sync.set({ providers });
+});
+
+backgroundTheme.addEventListener("change", async () => {
+  await chrome.storage.sync.set({ backgroundTheme: backgroundTheme.value });
 });
 
 openOptionsButton.addEventListener("click", () => {

@@ -4,16 +4,17 @@ const DEFAULT_SETTINGS = {
     zh: "google",
     en: "dictionaryapi"
   },
-  autoTranslate: true
+  autoTranslate: true,
+  backgroundTheme: "mist"
 };
 
 const PROVIDER_OPTIONS = {
   zh: [
-    { value: "google", label: "Google Web" },
+    { value: "google", label: "Google" },
     { value: "mymemory", label: "MyMemory" }
   ],
   en: [
-    { value: "dictionaryapi", label: "Free Dictionary" },
+    { value: "dictionaryapi", label: "Dictionary" },
     { value: "datamuse", label: "Datamuse" }
   ]
 };
@@ -23,13 +24,12 @@ let currentSelection = "";
 let panel;
 let sourceNode;
 let headerPhoneticNode;
-let targetSelect;
-let providerSelect;
+let targetGroup;
+let providerGroup;
 let refreshButton;
 let statusNode;
 let primaryNode;
 let listNode;
-let footerNode;
 
 init();
 
@@ -78,6 +78,11 @@ function bindEvents() {
       };
     }
 
+    if (changes.backgroundTheme) {
+      settings.backgroundTheme = changes.backgroundTheme.newValue;
+      applyPanelTheme();
+    }
+
     syncControls();
   });
 }
@@ -112,55 +117,34 @@ function createPanel() {
   panel.id = "bros-selection-translator";
   panel.hidden = true;
   panel.innerHTML = `
-    <div class="bst-header">
-      <strong class="bst-title">Selection Translator</strong>
-      <span class="bst-header-phonetic"></span>
-      <span class="bst-source"></span>
-    </div>
-    <div class="bst-body">
-      <div class="bst-controls">
-        <select class="bst-select" data-role="target">
-          <option value="zh">英译中</option>
-          <option value="en">英译英</option>
-        </select>
-        <select class="bst-select" data-role="provider"></select>
-        <button class="bst-button" type="button" title="Refresh">↻</button>
+    <div class="bst-shell">
+      <div class="bst-toolbar">
+        <div class="bst-chip-group" data-role="target"></div>
+        <div class="bst-chip-group" data-role="provider"></div>
+        <button class="bst-icon-button" type="button" title="Refresh">↻</button>
       </div>
-      <span class="bst-status"></span>
-      <strong class="bst-primary"></strong>
-      <div class="bst-list"></div>
+      <div class="bst-header">
+        <span class="bst-source"></span>
+        <span class="bst-header-phonetic"></span>
+      </div>
+      <div class="bst-body">
+        <span class="bst-status" hidden></span>
+        <strong class="bst-primary"></strong>
+        <div class="bst-list"></div>
+      </div>
     </div>
-    <div class="bst-footer"></div>
   `;
 
   document.documentElement.appendChild(panel);
 
   sourceNode = panel.querySelector(".bst-source");
   headerPhoneticNode = panel.querySelector(".bst-header-phonetic");
-  targetSelect = panel.querySelector('[data-role="target"]');
-  providerSelect = panel.querySelector('[data-role="provider"]');
-  refreshButton = panel.querySelector(".bst-button");
+  targetGroup = panel.querySelector('[data-role="target"]');
+  providerGroup = panel.querySelector('[data-role="provider"]');
+  refreshButton = panel.querySelector(".bst-icon-button");
   statusNode = panel.querySelector(".bst-status");
   primaryNode = panel.querySelector(".bst-primary");
   listNode = panel.querySelector(".bst-list");
-  footerNode = panel.querySelector(".bst-footer");
-
-  targetSelect.addEventListener("change", async () => {
-    settings.defaultTargetLanguage = targetSelect.value;
-    await chrome.storage.sync.set({ defaultTargetLanguage: settings.defaultTargetLanguage });
-    syncControls();
-    if (currentSelection) {
-      await translateCurrentSelection();
-    }
-  });
-
-  providerSelect.addEventListener("change", async () => {
-    settings.providers[targetSelect.value] = providerSelect.value;
-    await chrome.storage.sync.set({ providers: settings.providers });
-    if (currentSelection) {
-      await translateCurrentSelection();
-    }
-  });
 
   refreshButton.addEventListener("click", () => {
     if (currentSelection) {
@@ -168,43 +152,53 @@ function createPanel() {
     }
   });
 
+  applyPanelTheme();
   syncControls();
 }
 
 function syncControls() {
   const target = settings.defaultTargetLanguage;
-  targetSelect.value = target;
-  providerSelect.innerHTML = "";
+  renderChipGroup(targetGroup, [
+    { value: "zh", label: "英中" },
+    { value: "en", label: "英英" }
+  ], target, async (value) => {
+    settings.defaultTargetLanguage = value;
+    await chrome.storage.sync.set({ defaultTargetLanguage: settings.defaultTargetLanguage });
+    syncControls();
+    if (currentSelection) {
+      await translateCurrentSelection();
+    }
+  });
 
-  for (const option of PROVIDER_OPTIONS[target]) {
-    const node = document.createElement("option");
-    node.value = option.value;
-    node.textContent = option.label;
-    providerSelect.appendChild(node);
-  }
-
-  providerSelect.value = settings.providers[target];
+  renderChipGroup(providerGroup, PROVIDER_OPTIONS[target], settings.providers[target], async (value) => {
+    settings.providers[target] = value;
+    await chrome.storage.sync.set({ providers: settings.providers });
+    if (currentSelection) {
+      await translateCurrentSelection();
+    }
+  });
 }
 
 function renderLoading(text) {
   sourceNode.textContent = text;
   headerPhoneticNode.textContent = "";
+  statusNode.hidden = false;
   statusNode.textContent = "Loading...";
   primaryNode.textContent = "";
   listNode.innerHTML = "";
-  footerNode.textContent = "";
 }
 
 function renderError(message) {
+  statusNode.hidden = false;
   statusNode.textContent = message;
   primaryNode.textContent = "";
   headerPhoneticNode.textContent = "";
   listNode.innerHTML = "";
-  footerNode.textContent = "";
 }
 
 function renderResult(result) {
-  statusNode.textContent = describeMode(result.mode, targetSelect.value);
+  statusNode.hidden = true;
+  statusNode.textContent = "";
   primaryNode.textContent = result.primary || "";
   headerPhoneticNode.textContent = result.phonetic || "";
   listNode.innerHTML = "";
@@ -224,8 +218,6 @@ function renderResult(result) {
     item.append(main, detail);
     listNode.appendChild(item);
   }
-
-  footerNode.textContent = `${result.meta} · ${describeProvider(result.provider)}`;
 }
 
 async function translateCurrentSelection() {
@@ -233,8 +225,8 @@ async function translateCurrentSelection() {
 
   const payload = {
     text: currentSelection,
-    targetLanguage: targetSelect.value,
-    provider: providerSelect.value
+    targetLanguage: settings.defaultTargetLanguage,
+    provider: settings.providers[settings.defaultTargetLanguage]
   };
 
   try {
@@ -293,29 +285,31 @@ function hidePanel() {
   currentSelection = "";
 }
 
-function describeProvider(provider) {
-  switch (provider) {
-    case "google":
-      return "Google Web";
-    case "mymemory":
-      return "MyMemory";
-    case "dictionaryapi":
-      return "Free Dictionary";
-    case "datamuse":
-      return "Datamuse";
-    default:
-      return provider;
+function renderChipGroup(container, options, activeValue, onSelect) {
+  container.innerHTML = "";
+
+  for (const option of options) {
+    const node = document.createElement("button");
+    node.type = "button";
+    node.className = "bst-chip";
+    node.textContent = option.label;
+    node.dataset.value = option.value;
+    node.setAttribute("aria-pressed", String(option.value === activeValue));
+
+    if (option.value === activeValue) {
+      node.dataset.active = "true";
+    }
+
+    node.addEventListener("click", () => {
+      if (option.value !== activeValue) {
+        onSelect(option.value);
+      }
+    });
+
+    container.appendChild(node);
   }
 }
 
-function describeMode(mode, targetLanguage) {
-  if (targetLanguage === "en") {
-    return "English Dictionary";
-  }
-
-  if (mode === "dictionary-translation") {
-    return "Bilingual Dictionary";
-  }
-
-  return "Translation";
+function applyPanelTheme() {
+  panel.dataset.theme = settings.backgroundTheme || DEFAULT_SETTINGS.backgroundTheme;
 }

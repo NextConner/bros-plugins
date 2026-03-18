@@ -9,30 +9,44 @@
   <body>
     <main class="popup">
       <h1>Selection Translator</h1>
-      <p class="lead">划词后自动弹出结果卡片，英译中优先显示多义项，英译英使用英英词典。</p>
-      <label>
-        默认模式
-        <select id="target-language">
-          <option value="zh">英译中</option>
-          <option value="en">英译英</option>
-        </select>
-      </label>
-      <label>
-        英译中来源
-        <select id="provider-zh">
-          <option value="google">Google Web</option>
-          <option value="mymemory">MyMemory</option>
-        </select>
-      </label>
-      <label>
-        英英词典来源
-        <select id="provider-en">
-          <option value="dictionaryapi">Free Dictionary</option>
-          <option value="datamuse">Datamuse</option>
-        </select>
-      </label>
+      <p class="lead">只保留常用设置。页内卡片已切成紧凑模式，并支持浅色背景主题。</p>
+      <div class="grid">
+        <label>
+          默认模式
+          <select id="target-language">
+            <option value="zh">英译中</option>
+            <option value="en">英译英</option>
+          </select>
+        </label>
+        <label>
+          背景色
+          <select id="background-theme">
+            <option value="mist">雾蓝</option>
+            <option value="sage">浅青</option>
+            <option value="sand">米杏</option>
+            <option value="rose">浅玫</option>
+            <option value="lavender">淡紫</option>
+            <option value="peach">蜜桃</option>
+            <option value="slate">云灰</option>
+          </select>
+        </label>
+        <label>
+          英译中来源
+          <select id="provider-zh">
+            <option value="google">Google Web</option>
+            <option value="mymemory">MyMemory</option>
+          </select>
+        </label>
+        <label>
+          英英词典来源
+          <select id="provider-en">
+            <option value="dictionaryapi">Free Dictionary</option>
+            <option value="datamuse">Datamuse</option>
+          </select>
+        </label>
+      </div>
       <button id="open-options" type="button">打开详细设置</button>
-      <p class="hint">提示：英英词典当前只支持单词查询；英译中选中单词时会优先展示音标和多个义项。</p>
+      <p class="hint">英英词典当前只支持单词查询；卡片会跟随系统明暗模式自动切换。</p>
     </main>
     <script src="popup.js"></script>
   </body>
