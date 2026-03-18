@@ -40,6 +40,7 @@
 - `package-extension.ps1`：生成上传 ZIP 的打包脚本
 - `docs/*`：可直接用于 GitHub Pages 的静态发布目录
 - `SUBMISSION_CHECKLIST.md`：商店提交流程核对清单
+- `SUBMISSION_CHECKLIST.zh-CN.md`：中文提交流程核对清单
 
 ## 支持的浏览器
 
@@ -74,3 +75,4 @@
 - [PRIVACY.zh-CN.md](PRIVACY.zh-CN.md)
 - [STORE_LISTING.zh-CN.md](STORE_LISTING.zh-CN.md)
 - [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md)
+- [SUBMISSION_CHECKLIST.zh-CN.md](SUBMISSION_CHECKLIST.zh-CN.md)

@@ -63,3 +63,15 @@
 - 将隐私政策托管到公开的 HTTPS 地址，并把该 URL 填到商店后台
 - 在最终提交前确认第三方翻译/词典来源与商店文案一致
 - 最后一次手工联调后，将仓库内容打包为 ZIP 上传
+
+## 6. 如何托管 GitHub Pages
+
+1. 将当前仓库推送到 GitHub。
+2. 打开仓库页面，进入 `Settings`。
+3. 进入左侧的 `Pages`。
+4. 在 `Build and deployment` 中，将 `Source` 设为 `Deploy from a branch`。
+5. 分支选择 `main`，目录选择 `/docs`。
+6. 保存后等待 GitHub 完成发布。
+7. 发布成功后，访问：
+   `https://<你的用户名>.github.io/<你的仓库名>/privacy-policy.html`
+8. 确认页面可以通过 HTTPS 打开，再把这个地址填到 Chrome Web Store 和 Edge Add-ons 的隐私政策 URL。
