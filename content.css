@@ -226,6 +226,24 @@
   display: block;
   margin: 10px 0 0;
   padding: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bst-accent-soft) transparent;
+}
+
+.bst-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.bst-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bst-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--bst-accent-soft);
 }
 
 .bst-item {

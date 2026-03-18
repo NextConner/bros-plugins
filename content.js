@@ -40,6 +40,10 @@ async function init() {
 }
 
 function bindEvents() {
+  if (!hasExtensionContext()) {
+    return;
+  }
+
   document.addEventListener("mouseup", handleSelectionEvent, true);
   document.addEventListener("keyup", (event) => {
     if (event.key === "Escape") {
@@ -56,8 +60,11 @@ function bindEvents() {
     }
   }, true);
 
-  window.addEventListener("scroll", () => {
-    if (!panel.hidden) {
+  window.addEventListener("scroll", (event) => {
+    const target = event.target;
+    const isPageScroll = target === document || target === document.documentElement || target === document.body;
+
+    if (isPageScroll && !panel.hidden) {
       hidePanel();
     }
   }, true);
@@ -89,6 +96,11 @@ function bindEvents() {
 
 function handleSelectionEvent() {
   window.setTimeout(async () => {
+    if (!hasExtensionContext()) {
+      renderError("Extension updated. Refresh the page to continue.");
+      return;
+    }
+
     const selection = window.getSelection();
     const text = selection?.toString().replace(/\s+/g, " ").trim() || "";
 
@@ -163,7 +175,7 @@ function syncControls() {
     { value: "en", label: "英英" }
   ], target, async (value) => {
     settings.defaultTargetLanguage = value;
-    await chrome.storage.sync.set({ defaultTargetLanguage: settings.defaultTargetLanguage });
+    await saveSettingsFragment({ defaultTargetLanguage: settings.defaultTargetLanguage });
     syncControls();
     if (currentSelection) {
       await translateCurrentSelection();
@@ -172,7 +184,7 @@ function syncControls() {
 
   renderChipGroup(providerGroup, PROVIDER_OPTIONS[target], settings.providers[target], async (value) => {
     settings.providers[target] = value;
-    await chrome.storage.sync.set({ providers: settings.providers });
+    await saveSettingsFragment({ providers: settings.providers });
     if (currentSelection) {
       await translateCurrentSelection();
     }
@@ -221,6 +233,11 @@ function renderResult(result) {
 }
 
 async function translateCurrentSelection() {
+  if (!hasExtensionContext()) {
+    renderError("Extension updated. Refresh the page to continue.");
+    return;
+  }
+
   renderLoading(currentSelection);
 
   const payload = {
@@ -230,7 +247,7 @@ async function translateCurrentSelection() {
   };
 
   try {
-    const response = await chrome.runtime.sendMessage({
+    const response = await sendRuntimeMessage({
       type: "translate-selection",
       payload
     });
@@ -246,8 +263,12 @@ async function translateCurrentSelection() {
 }
 
 async function loadSettings() {
+  if (!hasExtensionContext()) {
+    return structuredClone(DEFAULT_SETTINGS);
+  }
+
   try {
-    const response = await chrome.runtime.sendMessage({ type: "get-settings" });
+    const response = await sendRuntimeMessage({ type: "get-settings" });
     if (response?.ok) {
       return {
         ...DEFAULT_SETTINGS,
@@ -302,7 +323,7 @@ function renderChipGroup(container, options, activeValue, onSelect) {
 
     node.addEventListener("click", () => {
       if (option.value !== activeValue) {
-        onSelect(option.value);
+        Promise.resolve(onSelect(option.value)).catch(handleExtensionContextError);
       }
     });
 
@@ -312,4 +333,37 @@ function renderChipGroup(container, options, activeValue, onSelect) {
 
 function applyPanelTheme() {
   panel.dataset.theme = settings.backgroundTheme || DEFAULT_SETTINGS.backgroundTheme;
+}
+
+function hasExtensionContext() {
+  return typeof chrome !== "undefined" && Boolean(chrome.runtime?.id);
+}
+
+async function sendRuntimeMessage(message) {
+  if (!hasExtensionContext()) {
+    throw new Error("Extension context invalidated.");
+  }
+
+  return chrome.runtime.sendMessage(message);
+}
+
+async function saveSettingsFragment(partial) {
+  if (!hasExtensionContext()) {
+    throw new Error("Extension context invalidated.");
+  }
+
+  return chrome.storage.sync.set(partial);
+}
+
+function handleExtensionContextError(error) {
+  if (isExtensionContextInvalidated(error)) {
+    renderError("Extension updated. Refresh the page to continue.");
+    return;
+  }
+
+  renderError(error?.message || "Operation failed.");
+}
+
+function isExtensionContextInvalidated(error) {
+  return /Extension context invalidated/i.test(error?.message || "");
 }
