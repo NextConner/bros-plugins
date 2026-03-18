@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bros Selection Translator 隐私政策</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #eef5fa;
+        --card: #ffffff;
+        --ink: #173047;
+        --muted: #5f7385;
+        --line: rgba(23, 48, 71, 0.12);
+        --accent: #0f4c81;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", "PingFang SC", sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(15, 76, 129, 0.14), transparent 32%),
+          var(--bg);
+        color: var(--ink);
+      }
+
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 48px 24px 72px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        padding: 32px;
+        box-shadow: 0 20px 48px rgba(23, 48, 71, 0.08);
+      }
+
+      h1, h2 {
+        margin: 0 0 16px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      h2 {
+        margin-top: 28px;
+        font-size: 20px;
+      }
+
+      p, li {
+        font-size: 15px;
+        line-height: 1.8;
+        color: var(--muted);
+      }
+
+      code {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <h1>Bros Selection Translator 隐私政策</h1>
+        <p><code>Bros Selection Translator</code> 只会处理用户在网页中主动选中的文本。</p>
+
+        <h2>扩展会做什么</h2>
+        <ul>
+          <li>在用户划选英文内容后读取当前选中文本。</li>
+          <li>将选中的文本发送给用户当前配置的在线翻译或词典服务。</li>
+          <li>将扩展设置保存到浏览器同步存储中。</li>
+        </ul>
+
+        <h2>第三方服务</h2>
+        <p>根据用户选择的来源，扩展可能会把选中的文本发送到：</p>
+        <ul>
+          <li><code>https://translate.googleapis.com/</code></li>
+          <li><code>https://api.mymemory.translated.net/</code></li>
+          <li><code>https://api.dictionaryapi.dev/</code></li>
+          <li><code>https://api.datamuse.com/</code></li>
+        </ul>
+        <p>扩展不会上传整个网页内容，只会发送用户当前选中的文本。</p>
+
+        <h2>本地存储的数据</h2>
+        <ul>
+          <li>默认翻译方向</li>
+          <li>英译中来源选择</li>
+          <li>英英词典来源选择</li>
+          <li>是否自动翻译</li>
+        </ul>
+
+        <h2>数据收集说明</h2>
+        <ul>
+          <li>不包含账号系统。</li>
+          <li>不包含统计或追踪 SDK。</li>
+          <li>不会建立用户画像。</li>
+          <li>本项目本身不会上传翻译历史。</li>
+        </ul>
+
+        <h2>用户控制</h2>
+        <ul>
+          <li>用户可以控制选中什么内容。</li>
+          <li>用户可以选择使用哪个翻译或词典来源。</li>
+          <li>用户可以关闭自动翻译。</li>
+          <li>用户可以随时卸载扩展并清除扩展存储数据。</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

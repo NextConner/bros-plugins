@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "Bros Selection Translator",
+  "version": "1.0.0",
+  "description": "Translate selected English text to Chinese or English dictionary definitions in Chromium browsers.",
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "32": "assets/icons/icon-32.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.mymemory.translated.net/*",
+    "https://translate.googleapis.com/*",
+    "https://api.dictionaryapi.dev/*",
+    "https://api.datamuse.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Selection Translator",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "32": "assets/icons/icon-32.png"
+    }
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
