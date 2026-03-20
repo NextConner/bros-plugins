@@ -10,6 +10,9 @@ const DEFAULT_SETTINGS = {
   disabledPages: []
 };
 
+const ECDICT_RESOURCE_PATH = "assets/dictionaries/ecdict.json";
+let ecDictIndexPromise = null;
+
 chrome.runtime.onInstalled.addListener(async () => {
   const stored = await chrome.storage.sync.get(DEFAULT_SETTINGS);
   const nextSettings = {
@@ -69,6 +72,10 @@ async function handleTranslation(payload) {
   }
 
   if (targetLanguage === "zh") {
+    if (provider === "ecdict") {
+      return lookupWithEcDict(text);
+    }
+
     if (provider === "mymemory") {
       return translateWithMyMemory(text);
     }
@@ -169,6 +176,32 @@ async function translateWithMyMemory(text) {
     phonetic: wordMeta?.phonetic || "",
     entries,
     meta: isSingleEnglishWord(text) ? "MyMemory bilingual suggestions" : "MyMemory"
+  };
+}
+
+async function lookupWithEcDict(text) {
+  const word = normalizeWordInput(text);
+  const dictionary = await loadEcDictIndex();
+  const entry = dictionary[word.toLowerCase()];
+
+  if (!entry) {
+    throw new Error("No ECDICT entry found. Try Google Web for phrases or uncommon forms.");
+  }
+
+  const entries = buildEcDictEntries(entry);
+  if (!entries.length) {
+    throw new Error("ECDICT entry is missing readable translations.");
+  }
+
+  return {
+    mode: "dictionary-translation",
+    provider: "ecdict",
+    targetLanguage: "zh",
+    sourceText: entry.w || word,
+    primary: entries[0].label,
+    phonetic: entry.p || "",
+    entries,
+    meta: buildEcDictMeta(entry)
   };
 }
 
@@ -336,4 +369,84 @@ function dedupeEntries(entries) {
     seen.add(key);
     return true;
   });
+}
+
+async function loadEcDictIndex() {
+  if (!ecDictIndexPromise) {
+    ecDictIndexPromise = fetch(chrome.runtime.getURL(ECDICT_RESOURCE_PATH))
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to load bundled ECDICT data (${response.status}).`);
+        }
+
+        const payload = await response.json();
+        if (!payload?.entries || typeof payload.entries !== "object") {
+          throw new Error("Bundled ECDICT data is malformed.");
+        }
+
+        return payload.entries;
+      })
+      .catch((error) => {
+        ecDictIndexPromise = null;
+        throw new Error(
+          `ECDICT offline dictionary is not available. Run the local build step to generate ${ECDICT_RESOURCE_PATH}. ${error.message}`
+        );
+      });
+  }
+
+  return ecDictIndexPromise;
+}
+
+function buildEcDictEntries(entry) {
+  const entries = [];
+  const details = entry.s ? formatEcDictPos(entry.s) : "";
+
+  for (const label of splitEcDictSegments(entry.t || "")) {
+    entries.push({
+      label,
+      detail: details
+    });
+  }
+
+  for (const label of splitEcDictSegments(entry.d || "")) {
+    entries.push({
+      label,
+      detail: details ? `${details} · EN` : "EN"
+    });
+  }
+
+  return dedupeEntries(entries).slice(0, 6);
+}
+
+function splitEcDictSegments(value) {
+  return value
+    .split(/\r?\n|[；;]/)
+    .map((item) => item.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+}
+
+function formatEcDictPos(value) {
+  return value
+    .split("/")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .join(" / ");
+}
+
+function buildEcDictMeta(entry) {
+  const pieces = ["ECDICT offline dictionary"];
+
+  if (entry.g) {
+    pieces.push(entry.g);
+  }
+
+  if (entry.c && entry.c !== "0") {
+    pieces.push(`Collins ${entry.c}`);
+  }
+
+  if (entry.o && entry.o !== "0") {
+    pieces.push("Oxford");
+  }
+
+  return pieces.join(" · ");
 }

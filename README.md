@@ -134,3 +134,22 @@ Included in this repository:
 - host `privacy-policy.html` at a public HTTPS URL and use that URL in Chrome Web Store and Edge Add-ons
 - review whether the selected online providers and descriptions match your final production policy
 - run `./package-extension.ps1` after final testing if you need a fresh upload ZIP
+
+## ECDICT Offline Integration
+
+This extension can use the `skywind3000/ECDICT` dataset as an offline English-to-Chinese provider for single-word lookups.
+
+1. Generate the local dictionary bundle:
+
+```powershell
+node .\tools\build-ecdict.js
+```
+
+2. Reload the extension.
+3. Switch the Chinese provider to `ECDICT Offline` in the popup or options page.
+
+Notes:
+
+- The build script downloads `ecdict.mini.csv` from the upstream ECDICT repository when the source file is missing.
+- The generated file is written to `assets/dictionaries/ecdict.json`.
+- `ECDICT Offline` is intended for single-word dictionary lookups. Phrases and sentences should continue to use `Google Web` or `MyMemory`.

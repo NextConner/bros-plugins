@@ -76,3 +76,22 @@
 - [STORE_LISTING.zh-CN.md](STORE_LISTING.zh-CN.md)
 - [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md)
 - [SUBMISSION_CHECKLIST.zh-CN.md](SUBMISSION_CHECKLIST.zh-CN.md)
+
+## ECDICT 绂荤嚎璇嶅吀闆嗘垚
+
+鎻掍欢宸叉敮鎸佹妸 `skywind3000/ECDICT` 浣滀负鑻辫瘧涓殑绂荤嚎 provider锛屽綋鍓嶉拡瀵瑰崟璇嶆煡璇㈠満鏅娇鐢ㄣ€?
+
+1. 鐢熸垚鏈湴璇嶅吀绱㈠紩锛?
+
+```powershell
+node .\tools\build-ecdict.js
+```
+
+2. 閲嶆柊鍔犺浇鎵╁睍銆?
+3. 鍦ㄥ脊绐楁垨璁剧疆椤典腑锛屾妸鈥滆嫳璇戜腑鏉ユ簮鈥濆垏鎹㈠埌 `ECDICT Offline`銆?
+
+璇存槑锛?
+
+- 濡傛灉鏈湴娌℃湁 `ecdict.mini.csv`锛岃剼鏈皢浼氫粠涓婃父 ECDICT 浠撳簱涓嬭浇瀹冦€?
+- 鐢熸垚鐨勬墿灞曡祫婧愭枃浠朵负 `assets/dictionaries/ecdict.json`銆?
+- `ECDICT Offline` 鍙€傚悎鍗曡瘝绂荤嚎鏌ヨ锛涚煭璇垨鏁村彞浠嶅缓璁娇鐢?`Google Web` 鎴?`MyMemory`銆?

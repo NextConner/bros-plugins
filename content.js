@@ -12,7 +12,8 @@ const DEFAULT_SETTINGS = {
 const PROVIDER_OPTIONS = {
   zh: [
     { value: "google", label: "Google" },
-    { value: "mymemory", label: "MyMemory" }
+    { value: "mymemory", label: "MyMemory" },
+    { value: "ecdict", label: "ECDICT" }
   ],
   en: [
     { value: "dictionaryapi", label: "Dictionary" },
@@ -53,7 +54,7 @@ function bindEvents() {
       return;
     }
 
-    handleSelectionEvent();
+    handleSelectionEvent(event);
   }, true);
 
   document.addEventListener("mousedown", (event) => {
@@ -106,10 +107,14 @@ function bindEvents() {
   });
 }
 
-function handleSelectionEvent() {
+function handleSelectionEvent(event) {
   window.setTimeout(async () => {
     if (isPageDisabled) {
       hidePanel();
+      return;
+    }
+
+    if (isSelectionTriggeredInsidePanel(event)) {
       return;
     }
 
@@ -119,6 +124,10 @@ function handleSelectionEvent() {
     }
 
     const selection = window.getSelection();
+    if (isSelectionInsidePanel(selection)) {
+      return;
+    }
+
     const text = selection?.toString().replace(/\s+/g, " ").trim() || "";
 
     if (!text || text === currentSelection) {
@@ -400,4 +409,27 @@ function isPageDisabledBySettings(nextSettings) {
 
 function getCurrentPageKey() {
   return `${window.location.origin}${window.location.pathname}`;
+}
+
+function isSelectionTriggeredInsidePanel(event) {
+  if (!event?.target) {
+    return false;
+  }
+
+  return panel.contains(event.target);
+}
+
+function isSelectionInsidePanel(selection) {
+  if (!selection || selection.rangeCount < 1) {
+    return false;
+  }
+
+  const anchorNode = selection.anchorNode;
+  const focusNode = selection.focusNode;
+  const range = selection.getRangeAt(0);
+  const commonAncestor = range.commonAncestorContainer;
+
+  return [anchorNode, focusNode, commonAncestor].some((node) => {
+    return node instanceof Node && panel.contains(node);
+  });
 }
