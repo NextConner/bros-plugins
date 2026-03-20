@@ -6,7 +6,8 @@ const DEFAULT_SETTINGS = {
   },
   triggerMode: "mouseup",
   autoTranslate: true,
-  backgroundTheme: "mist"
+  backgroundTheme: "mist",
+  disabledPages: []
 };
 
 chrome.runtime.onInstalled.addListener(async () => {

@@ -125,7 +125,8 @@
 }
 
 .bst-toolbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   align-items: center;
   gap: 6px;
   margin-bottom: 8px;
@@ -133,7 +134,8 @@
 
 .bst-chip-group {
   all: initial;
-  display: inline-flex;
+  display: flex;
+  width: 100%;
   align-items: center;
   gap: 4px;
   min-width: 0;
@@ -146,17 +148,20 @@
 
 .bst-chip {
   all: initial;
-  display: inline-flex;
+  display: flex;
+  flex: 1 1 0;
   align-items: center;
   justify-content: center;
-  min-width: 46px;
+  min-width: 0;
   height: 24px;
-  padding: 0 10px;
+  padding: 0 8px;
   border-radius: 999px;
   font: 600 11px/1 "Segoe UI", "PingFang SC", sans-serif;
   color: var(--bst-muted);
   cursor: pointer;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .bst-chip[data-active="true"] {

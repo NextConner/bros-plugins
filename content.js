@@ -5,7 +5,8 @@ const DEFAULT_SETTINGS = {
     en: "dictionaryapi"
   },
   autoTranslate: true,
-  backgroundTheme: "mist"
+  backgroundTheme: "mist",
+  disabledPages: []
 };
 
 const PROVIDER_OPTIONS = {
@@ -30,6 +31,7 @@ let refreshButton;
 let statusNode;
 let primaryNode;
 let listNode;
+let isPageDisabled = false;
 
 init();
 
@@ -90,12 +92,27 @@ function bindEvents() {
       applyPanelTheme();
     }
 
+    if (changes.disabledPages) {
+      settings.disabledPages = Array.isArray(changes.disabledPages.newValue)
+        ? changes.disabledPages.newValue
+        : [];
+      isPageDisabled = checkIsPageDisabled();
+      if (isPageDisabled) {
+        hidePanel();
+      }
+    }
+
     syncControls();
   });
 }
 
 function handleSelectionEvent() {
   window.setTimeout(async () => {
+    if (isPageDisabled) {
+      hidePanel();
+      return;
+    }
+
     if (!hasExtensionContext()) {
       renderError("Extension updated. Refresh the page to continue.");
       return;
@@ -270,7 +287,7 @@ async function loadSettings() {
   try {
     const response = await sendRuntimeMessage({ type: "get-settings" });
     if (response?.ok) {
-      return {
+      const nextSettings = {
         ...DEFAULT_SETTINGS,
         ...response.result,
         providers: {
@@ -278,10 +295,13 @@ async function loadSettings() {
           ...(response.result.providers || {})
         }
       };
+      isPageDisabled = isPageDisabledBySettings(nextSettings);
+      return nextSettings;
     }
   } catch (_error) {
   }
 
+  isPageDisabled = checkIsPageDisabled();
   return structuredClone(DEFAULT_SETTINGS);
 }
 
@@ -366,4 +386,18 @@ function handleExtensionContextError(error) {
 
 function isExtensionContextInvalidated(error) {
   return /Extension context invalidated/i.test(error?.message || "");
+}
+
+function checkIsPageDisabled() {
+  return isPageDisabledBySettings(settings);
+}
+
+function isPageDisabledBySettings(nextSettings) {
+  const disabledPages = Array.isArray(nextSettings?.disabledPages) ? nextSettings.disabledPages : [];
+  const currentPageKey = getCurrentPageKey();
+  return disabledPages.includes(currentPageKey);
+}
+
+function getCurrentPageKey() {
+  return `${window.location.origin}${window.location.pathname}`;
 }
